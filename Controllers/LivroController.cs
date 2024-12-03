@@ -29,7 +29,7 @@ namespace Bibliotec_mvc.Controllers
             List<Livro> Listalivros = context.Livro.ToList();
 
             // Verificar se o livro tem reserva ou não
-            var livrosReservados = context.LivroReserva.ToDictionary(Livro => Livro.LivroID, livro => livro.DtReserva);
+            var livrosReservados = context.LivroReserva.ToDictionary(livro => livro.LivroID, livror => livror.DtReserva);
 
             ViewBag.Livros = Listalivros;
             ViewBag.LivrosComReserva = livrosReservados;
@@ -56,9 +56,51 @@ namespace Bibliotec_mvc.Controllers
             novoLivro.Editora = form["Editora"].ToString();
             novoLivro.Escritor = form["Escritor"].ToString();
             novoLivro.Idioma = form["Idioma"].ToString();
+            if (form.Files.Count > 0)
+            {
+                var arquivo = form.Files[0];
+                var pasta = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/imagens/Livros");
+                if (!Directory.Exists(pasta))
+                {
+                    Directory.CreateDirectory(pasta);
+                }
+                var caminho = Path.Combine(pasta, arquivo.FileName);
+                using (var stream = new FileStream(caminho, FileMode.Create))
+                {
+                    arquivo.CopyTo(stream);
+                }
+                novoLivro.Imagem = arquivo.FileName;
+
+
+
+            }
+            else
+            {
+                novoLivro.Imagem = "padrao.png";
+            }
 
             //IMAGEM
             context.Livro.Add(novoLivro);
+
+            context.SaveChanges();
+
+            List<LivroCategoria> listaLivroCategorias = new List<LivroCategoria>();
+            string[] categoriasSelecionadas = form["Categoria"].ToString().Split(',');
+
+            foreach (string categoria in categoriasSelecionadas)
+            {
+                LivroCategoria livroCategoria = new LivroCategoria();
+                livroCategoria.CategoriaID = int.Parse(categoria);
+                livroCategoria.LivroID = novoLivro.LivroID;
+                listaLivroCategorias.Add(livroCategoria);
+
+            }
+            context.LivroCategoria.AddRange(listaLivroCategorias);
+            context.SaveChanges();
+
+            return LocalRedirect("/Livro/Cadastro");
+
+
 
 
         }
