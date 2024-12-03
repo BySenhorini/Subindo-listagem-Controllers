@@ -27,7 +27,8 @@
                 {
                     <tr>
                         <td data-cell="titulo">@livro.Nome</td>
-                        <td data-cell="reservado">@(ViewBag.LivrosComReserva.ConstainsKey(livro.LivroID) ? "Sim" : "Não")</td>
+                        <td data-cell="reservado">@(ViewBag.LivrosComReserva.ConstainsKey(livro.LivroID) ? "Sim" : "Não")
+                        </td>
                         <td data-cell="data devol.">">@(ViewBag.LivrosComReserva.ConstainsKey(livro.LivroID) ?
                         ViewBag.LivrosComReserva[livro.LivroID].ToString("dd/MM/yyyy") : "Não possui reserva")</td>
                         <td class="icon" data-cell="editar"><a class="navbar-item"><img style="width: 40px;"
@@ -38,7 +39,6 @@
                                     src="~/images/excluir.svg" alt=""></a></td>
                     </tr>
                 }
-
 
             </tbody>
         </table>
